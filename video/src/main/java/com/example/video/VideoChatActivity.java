@@ -46,7 +46,8 @@ public class VideoChatActivity extends AppCompatActivity implements View.OnClick
     ImageView headImage;
 
     // 程序中的按钮
-    ImageButton record, buttonHangup, buttonAnswer;
+   // ImageButton record, buttonHangup, buttonAnswer;
+    ImageButton record;
     ImageView change;
 
     // 显示视频预览的SurfaceView
@@ -78,20 +79,22 @@ public class VideoChatActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         // 去掉标题栏 ,必须放在setContentView之前
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_main);
         // 设置横屏显示
         // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         // 设置全屏
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         // 选择支持半透明模式,在有surfaceview的activity中使用。
         //getWindow().setFormat(PixelFormat.TRANSLUCENT);
         // 获取程序界面中的按钮
         record = (ImageButton) findViewById(R.id.record);
         change = (ImageView) findViewById(R.id.change);
-//        buttonHangup =  findViewById(R.id.buttonHangup);
-//        headImage =  findViewById(R.id.headImage);
-//        buttonAnswer = findViewById(R.id.buttonAnswer);
+        //buttonHangup =  findViewById(R.id.buttonHangup);
+        //headImage =  findViewById(R.id.headImage);
+        //buttonAnswer = findViewById(R.id.buttonAnswer);
 
         // 让切换相机按钮不可用。
         change.setEnabled(false);
@@ -99,10 +102,19 @@ public class VideoChatActivity extends AppCompatActivity implements View.OnClick
         // 为两个按钮的单击事件绑定监听器
         record.setOnClickListener(this);
         change.setOnClickListener(this);
-        buttonHangup.setOnClickListener(this);
-        buttonAnswer.setOnClickListener(this);
+//        buttonHangup.setOnClickListener(this);
+       // buttonAnswer.setOnClickListener(this);
         // 获取程序界面中的大SurfaceView
         sView = (SurfaceView) this.findViewById(R.id.sView);
+
+
+
+
+
+
+
+
+
         // 设置分辨率
         sView.getHolder().setFixedSize(width, height);
         // 设置该组件让屏幕不会自动关闭
@@ -277,12 +289,12 @@ public class VideoChatActivity extends AppCompatActivity implements View.OnClick
                     break;
                 case 2:
                     //设置正在录制
-                    isRecording = true;
-                    //隐藏头像
-                    headImage.setVisibility(View.GONE);
-                    //设置背景图为空，否则会遮档视频
-                    sView.setBackgroundResource(0);
-                    mView.setBackgroundResource(0);
+//                    isRecording = true;
+//                    //隐藏头像
+//                    headImage.setVisibility(View.GONE);
+//                    //设置背景图为空，否则会遮档视频
+//                    sView.setBackgroundResource(0);
+//                    mView.setBackgroundResource(0);
                     initCameara();
                     break;
                 default:

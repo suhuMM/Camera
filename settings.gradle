@@ -1,1 +1,1 @@
-include ':app', ':video', ':jinshansdk'
+include ':app', ':video', ':jinshansdk', ':mscV5PlusDemo', ':kedaxunfei'

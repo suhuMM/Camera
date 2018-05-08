@@ -30,12 +30,5 @@
 
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        />
 
 </RelativeLayout>

@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/dome.iml" filepath="$PROJECT_DIR$/dome.iml" />
       <module fileurl="file://$PROJECT_DIR$/jinshansdk/jinshansdk.iml" filepath="$PROJECT_DIR$/jinshansdk/jinshansdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kedaxunfei/kedaxunfei.iml" filepath="$PROJECT_DIR$/kedaxunfei/kedaxunfei.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mscV5PlusDemo/mscV5PlusDemo.iml" filepath="$PROJECT_DIR$/mscV5PlusDemo/mscV5PlusDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/video/video.iml" filepath="$PROJECT_DIR$/video/video.iml" />
     </modules>
   </component>

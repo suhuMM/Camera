@@ -2,19 +2,24 @@ package com.example.administrator.dome;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback{
+public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
     private static final String TAG = "MainActivity";
     /**
@@ -42,9 +47,21 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //取消状态栏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        setContentView(R.layout.activity_main);
         initSurfaceView();
+        //initSpeech();
+        ttsRead();
+        //faceDialog();
+
+
     }
 
 
@@ -64,13 +81,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
 
 
-
+    byte a[] = new byte[1024*8];
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mCamera = Camera.open();// 开启摄像头（2.3版本后支持多摄像头,需传入参数）
-        mCamera.setPreviewCallback(new encoderVideo(0, 0, (ImageView) findViewById(R.id.image)));//①原生yuv420sp视频存储方式
-        //mCamera.startPreview();
+        mCamera = Camera.open(1);// 开启摄像头（2.3版本后支持多摄像头,需传入参数）
+  //      mCamera.setPreviewCallback(new encoderVideo(0, 0, (ImageView) findViewById(R.id.image)));//①原生yuv420sp视频存储方式
+        mCamera.addCallbackBuffer(new byte[((1920 * 1080) * ImageFormat.getBitsPerPixel(ImageFormat.NV21)) / 8]);
+        mCamera.setPreviewCallbackWithBuffer(new encoderVideo());
+        mCamera.startPreview();
         try
         {
             Log.i(TAG, "SurfaceHolder.Callback：surface Created");
@@ -227,6 +246,17 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             //imageView.setImageBitmap(BitmapFactory.decodeByteArray(data,0,data.length));
             Camera.Size size = camera.getParameters().getPreviewSize();
             Log.i(TAG,"---------------------------------data :w="+size.width+"        h="+size.height+data.toString());
+            read("李三欢迎光临");
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+
+            //readKDXF("你好欢迎光临");
+            mCamera.addCallbackBuffer(data);
 
             //camera.setOneShotPreviewCallback(null);
             //处理data
@@ -280,8 +310,78 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
 
 
+/***************************************************************TTs语音播放***********************************************************************/
 
 
+    private TextToSpeech tts;
+    private boolean isRead = false;
+    private void ttsRead(){
+        isRead = true;
+        tts = new TextToSpeech(this,this);
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status==TextToSpeech.SUCCESS){
+            Log.e(TAG,"success");
+            int result = tts.setLanguage(Locale.CHINA);
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                tts.setLanguage(Locale.CHINA);
+                tts.isLanguageAvailable(Locale.CHINA);
+                tts.setPitch(1.0f);
+                //tts.setSpeechRate(1.2f);
+            }
+
+
+
+        }else {
+            Log.e(TAG,"失败");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        if (tts!=null){
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+
+    }
+
+
+    private void read(String str){
+        faceDialog();
+        if (isRead&&!tts.isSpeaking()){
+            tts.speak(str,TextToSpeech.QUEUE_FLUSH,null);
+        }
+    }
+
+
+
+    private FaceDialog dialog;
+    private FaceDialog faceDialog(){
+        dialog = new FaceDialog(MainActivity.this,R.style.dialog,"http://pic5.58cdn.com.cn/zhuanzh/n_v1bkuyfvltjuifpjbky4aq.jpg","张三");
+        dialog.show();
+        return dialog;
+    }
+
+
+
+
+
+    /******************************************************************科大讯飞的接口*****************************************************/
+
+    private void readKDXF(String str){
+        VoiceUtils.getInstance().initmTts(MainActivity.this,str);
+    }
+
+
+    private void popup(){
+
+    }
 
 
 }
