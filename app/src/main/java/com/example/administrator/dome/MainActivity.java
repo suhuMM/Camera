@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -360,13 +361,21 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
 
+    /****************************************************************dialog***********************************************************************************/
 
-    private FaceDialog dialog;
+
+
     private FaceDialog faceDialog(){
-        dialog = new FaceDialog(MainActivity.this,R.style.dialog,"http://pic5.58cdn.com.cn/zhuanzh/n_v1bkuyfvltjuifpjbky4aq.jpg","张三");
+        FaceDialog dialog = new FaceDialog(MainActivity.this,R.style.dialog,"http://pic5.58cdn.com.cn/zhuanzh/n_v1bkuyfvltjuifpjbky4aq.jpg","张三");
         dialog.show();
+        linkedList.add(dialog);
         return dialog;
     }
+
+    private List<FaceDialog> linkedList = new LinkedList<>();
+
+
+
 
 
 
