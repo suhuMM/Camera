@@ -49,7 +49,7 @@ public class SweetDialog {
                 .withDialogColor("#FFE74C3C")                               //def  | withDialogColor(int resid)                               //def
                 .isCancelableOnTouchOutside(true)                           //def    | isCancelable(true)
                 .withDuration(1000)                                          //def
-                .withEffect(Effectstype.Slidetop)                                         //def Effectstype.Slidetop
+                .withEffect(Effectstype.Shake)                                         //def Effectstype.Slidetop
                 .withButton1Text("OK")                                      //def gone
                 .withButton2Text("Cancel")                                  //def gone
                 .setButton1Click(new View.OnClickListener() {

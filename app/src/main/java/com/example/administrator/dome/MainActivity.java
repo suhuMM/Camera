@@ -6,6 +6,8 @@ import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,7 +18,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         initSurfaceView();
         //initSpeech();
         ttsRead();
-        //faceDialog();
+        faceDialog();
 
 
     }
@@ -72,23 +73,24 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         mSurfaceview = (SurfaceView) this.findViewById(R.id.surfaceView);
         mSurfaceHolder = mSurfaceview.getHolder(); // 绑定SurfaceView，取得SurfaceHolder对象
         mSurfaceHolder.addCallback(this); // SurfaceHolder加入回调接口
-        mSurfaceHolder.setFixedSize(1920, 1160); // 预览大小設置
+
+//        WindowManager windowManager = getWindowManager();
+//        Display display = windowManager.getDefaultDisplay();
+//        mSurfaceHolder.setFixedSize(display.getWidth(), display.getHeight()); // 预览大小設置
+        mSurfaceHolder.setFixedSize(1920, 1152); // 预览大小設置
         mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);// 設置顯示器類型，setType必须设置
-
-
-
 
     }
 
 
 
-    byte a[] = new byte[1024*8];
+    byte bytes[] = new byte[((1920 * 1140) * ImageFormat.getBitsPerPixel(ImageFormat.NV21)) / 8];
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mCamera = Camera.open(1);// 开启摄像头（2.3版本后支持多摄像头,需传入参数）
+        mCamera = Camera.open(0);// 开启摄像头（2.3版本后支持多摄像头,需传入参数）
   //      mCamera.setPreviewCallback(new encoderVideo(0, 0, (ImageView) findViewById(R.id.image)));//①原生yuv420sp视频存储方式
-        mCamera.addCallbackBuffer(new byte[((1920 * 1080) * ImageFormat.getBitsPerPixel(ImageFormat.NV21)) / 8]);
+        mCamera.addCallbackBuffer(bytes);
         mCamera.setPreviewCallbackWithBuffer(new encoderVideo());
         mCamera.startPreview();
         try
@@ -176,9 +178,60 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     Log.i(TAG+"initCamera", "previewformates:" + pf);
                 }
 
+
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+
+
+                Camera.Size maxPictureSize = parameters.getSupportedPictureSizes().get(0);
+                Camera.Size maxPreviewSize = parameters.getSupportedPreviewSizes().get(0);
+                for (int i = 0; i < parameters.getSupportedPictureSizes().size(); i++) {
+                    Camera.Size s = parameters.getSupportedPictureSizes().get(i);
+                    if (s.width > maxPictureSize.width) {
+                        maxPictureSize = s;
+                    }
+                    if(s.width==maxPictureSize.width&&s.height>maxPictureSize.height){
+                        maxPictureSize = s;
+                    }
+                }
+                for (int i = 0; i < parameters.getSupportedPreviewSizes().size(); i++) {
+                    Camera.Size s = parameters.getSupportedPreviewSizes().get(i);
+                    if (s.width > maxPreviewSize.width) {
+                        maxPreviewSize = s;
+                    }
+                    if(s.width==maxPreviewSize.width&&s.height>maxPreviewSize.height){
+                        maxPreviewSize = s;
+                    }
+                }
+
+//                parameters.setPictureSize(maxPictureSize.width, maxPictureSize.height);
+//                parameters.setPreviewSize(maxPreviewSize.width, maxPreviewSize.height);
+
+
                 // 设置拍照和预览图片大小
                 parameters.setPictureSize(1160, 1920); //指定拍照图片的大小
                 parameters.setPreviewSize(mPreviewWidth, mPreviewHeight); // 指定preview的大小
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 //这两个属性 如果这两个属性设置的和真实手机的不一样时，就会报错
 
                 // 横竖屏镜头自动调整
@@ -246,18 +299,18 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             // TODO Auto-generated method stub
             //imageView.setImageBitmap(BitmapFactory.decodeByteArray(data,0,data.length));
             Camera.Size size = camera.getParameters().getPreviewSize();
-            Log.i(TAG,"---------------------------------data :w="+size.width+"        h="+size.height+data.toString());
+            Log.i(TAG,"---------------------------------data :w="+size.width+"        h="+size.height+"           data="+data.length +"       byte="+bytes.length);
             read("李三欢迎光临");
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Thread.sleep(10000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
 
 
             //readKDXF("你好欢迎光临");
-            mCamera.addCallbackBuffer(data);
+            //mCamera.addCallbackBuffer(data);
 
             //camera.setOneShotPreviewCallback(null);
             //处理data
@@ -354,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
 
     private void read(String str){
-        faceDialog();
+        httpTest();
         if (isRead&&!tts.isSpeaking()){
             tts.speak(str,TextToSpeech.QUEUE_FLUSH,null);
         }
@@ -368,14 +421,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private FaceDialog faceDialog(){
         FaceDialog dialog = new FaceDialog(MainActivity.this,R.style.dialog,"http://pic5.58cdn.com.cn/zhuanzh/n_v1bkuyfvltjuifpjbky4aq.jpg","张三");
         dialog.show();
-        linkedList.add(dialog);
         return dialog;
     }
-
-    private List<FaceDialog> linkedList = new LinkedList<>();
-
-
-
 
 
 
@@ -391,6 +438,47 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private void popup(){
 
     }
+
+
+    public void httpTest(){
+
+       Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //handler.sendEmptyMessage(0);
+                mHandler.sendEmptyMessage(0);
+            }
+        };
+        App.getThreadPool().execute(runnable);
+
+    }
+
+
+
+    /*************************************************防止内存泄漏handler***************************************************************/
+
+
+
+    private Handler.Callback callback = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+
+            switch (msg.what){
+                case 0:
+                    faceDialog();
+                    mCamera.addCallbackBuffer(bytes);
+                    break;
+                    default:
+            }
+            return true;
+        }
+    };
+    private Handler mHandler = new WeakRefHandler(callback);
 
 
 }

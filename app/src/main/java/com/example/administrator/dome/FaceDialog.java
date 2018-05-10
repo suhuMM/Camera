@@ -56,7 +56,8 @@ public class FaceDialog extends Dialog{
         view.getWindowVisibleDisplayFrame(rect);
         params.width = getScreenWidth();
         params.dimAmount = 0.5f;
-        getWindow().setWindowAnimations(R.style.popupWindowAnimation);
+        //getWindow().setWindowAnimations(R.style.popupWindowAnimation);
+        getWindow().setWindowAnimations(R.style.popupWindowScale);
         window.setAttributes(params);
 
         initView();
@@ -121,7 +122,7 @@ public class FaceDialog extends Dialog{
 
     @Override
     public void show() {
-        //countTimer();
+        countTimer();
         super.show();
     }
 }
